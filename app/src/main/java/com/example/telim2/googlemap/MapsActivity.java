@@ -50,8 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker currentLocationMarker;
     public static final int REQUEST_LOCATION_CODE = 99;
     EditText tf_location;
-    String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=48.8566,2.3522&radius=500&type=restaurant&keyword=cruise&key=AIzaSyC3_ndLS93DsNFqSB-78VuA00A0hrI8B5A";
-
+    String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=40.3835036,49.8232862&radius=500&type=restaurant&key=AIzaSyC3_ndLS93DsNFqSB-78VuA00A0hrI8B5A";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,22 +112,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         @Override
                         public void onResponse(String response) {
 
-
                             try {
-                                JSONArray jsonArray=new JSONArray(response);
-                                JSONObject jO=jsonArray.getJSONObject(1);
-
+                                JSONObject jsonObject=new JSONObject(response);
+                                JSONArray jsonArray=jsonObject.getJSONArray("results");
 
                                 for (int i=0;i<=jsonArray.length();i++) {
 
-                                    JSONObject jsonobject=jO.getJSONObject(
-                                            i);
+                                    JSONObject jsonobject=jsonArray.getJSONObject(i);
                                     String lat = jsonobject.getJSONObject("geometry").getJSONObject("location").getString("lat");
-                                    String lan = jsonobject.getJSONObject("geometry").getJSONObject("location").getString("lat");
+                                    String lan = jsonobject.getJSONObject("geometry").getJSONObject("location").getString("lng");
+                                    String location=jsonobject.getString("name");
                                     LatLng latLng = new LatLng(Double.parseDouble(lat) , Double.parseDouble(lan));
                                     MarkerOptions markerOptions = new MarkerOptions();
                                     markerOptions.position(latLng);
-                                    markerOptions.title("location");
+                                    markerOptions.title(location);
                                     mMap.addMarker(markerOptions);
                                     mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                                     mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
@@ -137,7 +134,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 e.printStackTrace();
                             }
 
-                            Toast.makeText(MapsActivity.this, "okke",Toast.LENGTH_LONG).show();
                         }
                     },
                     new Response.ErrorListener() {
